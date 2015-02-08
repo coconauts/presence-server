@@ -96,6 +96,15 @@ var arduino = function(pin, callback){
         });
     });   
 };
+/*
+var updatePresence = function(pin, callback){
+    db.all('SELECT * FROM people', [], function(err, result){
+        if (err) console.err('Error reading people '+err);
+        else arduino(url, pin, function(json){
+            //db.run("UPDATE stats SET "+tag+" = 0 WHERE name = ? and platform = ?)
+        });
+    });
+}*/
 
 // app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 //   extended: true

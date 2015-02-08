@@ -5,13 +5,10 @@ $("#create_user").click(function() {
 var createUser = function(){
 	var name = $("#user").val();
 	var yun = $("#yun").val();
+	var pin = $("#pin").val();
 
-	var data = {
-		person: name,
-		yun_addr: yun
-	};
 	$.ajax({
-		url: '/presence/',
+		url: '/add_user?name='+name+'&yun='+yun_addr+'&pin='+pin,
 		data: data,
 		type: post,
 	});

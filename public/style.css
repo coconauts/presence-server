@@ -13,11 +13,11 @@ body {
 .null {
 	background-color:yellow;
 }
-.true {
+.status0 {
 	background-color:red;
 
 }
-.false {
+.status1 {
 	background-color:green;
 
 }

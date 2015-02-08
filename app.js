@@ -106,8 +106,14 @@ var updatePresence = function(pin, callback){
         if (err) console.err('Error reading people '+err);
         else for (var i= 0 ; i < result.length; i++){
             var person = result[i];
+            update(person);
             
-            arduino(person.yun_addr, person.yun_pin, function(json){
+        }
+    });
+}
+
+var update = function(person) {
+    arduino(person.yun_addr, person.yun_pin, function(json){
                  console.log(json);
                 var present = json.value == "1";
                 var time = new Date().getTime()   ;
@@ -118,10 +124,7 @@ var updatePresence = function(pin, callback){
                 console.log("Person " + person.id + " present: " + present);
                 db.run("UPDATE people SET present = ?, "+updateTime+" = ? WHERE id = ?",[present, time, person.id]);
             });
-        }
-    });
 }
-
 updatePresence();
 setInterval(function(){ updatePresence() } , 10000);
 app.listen(config.port);

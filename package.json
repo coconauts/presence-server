@@ -1,0 +1,11 @@
+{  
+  "name": "periodic-node",  
+  "dependencies" : {
+    "express" : "4.1.1",
+    "body-parser" : "1.0.2",
+    "redis": "0.12.1"
+  },  
+  "engine": {  
+    "node": ">=0.10.25"  
+  }  
+}

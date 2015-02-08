@@ -15,7 +15,10 @@
 #include <YunServer.h>
 #include <YunClient.h>
 
-
+#include <SPI.h>
+#include <boards.h>
+#include <RBL_nRF8001.h>
+#include <services.h>
 
 #define echoPin 12 // Echo Pin
 #define trigPin 11 // Trigger Pin
@@ -26,6 +29,7 @@ int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed
 long duration, distance; // Duration used to calculate distance
 YunServer server; 
+boolean sensorDetected = false;
 
 
 long lastSeen = 0;
@@ -41,6 +45,11 @@ void setup() {
     server.listenOnLocalhost();
   server.begin();
   
+    Serial.begin(57600);
+  ble_begin();
+  ble_set_name("arduinoble");
+
+  
 }
 
 void loop() {
@@ -55,6 +64,14 @@ void loop() {
   }
 
   delay(50); 
+}
+
+void bt_paired(){
+    ble_connected();
+}
+
+void is_present(){
+    return sensorDetected && bt_paired();
 }
 
 void process(YunClient client) {
@@ -112,8 +129,7 @@ void sensorloop(){
  /* Send a negative number to computer and Turn LED ON 
  to indicate "out of range" */
  //Serial.println("-1");
- digitalWrite(LEDPin, HIGH); 
- Bridge.put(String(LEDPin), String(1));
+ sensorDetected = True;
  lastSeen = millis();
  }
  else {
@@ -121,12 +137,16 @@ void sensorloop(){
  turn LED OFF to indicate successful reading. */
  //Serial.println(distance);
  digitalWrite(LEDPin, LOW);
- Bridge.put(String(LEDPin), String(0)); 
+ sensorDetected = false;
  lastAway = millis();
  }
  
- Serial.println(lastAway);
- 
+if is_present() {
+ Bridge.put(String(LEDPin), String(1));
+} else {
+ Bridge.put(String(LEDPin), String(0)); 
+}
+
  if (lastAway+ 5000 < millis()   ){
      digitalWrite(warningPin, HIGH);
  } else {

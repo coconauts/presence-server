@@ -32,18 +32,22 @@ var getStatus = function(){
 var drawDesk = function(person){
     var now = new Date().getTime();
 console.log("now " +  now + " last seen " + person.last_seen ) 
+
 	var divTemplate = "<div class='presence status"+person.present+"'>"+
 		"<p>"+person.id+"</p>"+
-		"<p>"+timeAgo((now - person.last_seen)/1000)+"</p>"+
-		"<p>"+timeAgo((now - person.last_away)/1000)+"</p>"+
+		"<p>Last seen: "+timeAgo((now - person.last_seen)/1000)+"</p>"+
+		"<p>Last away: "+timeAgo((now - person.last_away)/1000)+"</p>"+
 	"</div>";
 
+        
+   
 	$("#main").append(divTemplate);
 }
 
 
 var timeAgo = function(diff){
 
+  if (diff > 16400) return "never";
   if (diff > DAY) return round(diff / DAY,2) + " days";
   if (diff > HOUR ) return round(diff / HOUR,2) + " hours";
   if (diff > MINUTE ) return round(diff / MINUTE,2) + " minutes";

@@ -3,6 +3,7 @@ var express = require("express"),
     app = express(),
     fs = require("fs"),
     sqlite3 = require("sqlite3").verbose(),
+    bodyParser = require('body-parser'),
     http = require('http');
     
     
@@ -12,13 +13,13 @@ var config = require('./config.json'),
     db = new sqlite3.Database("/tmp/presence.sql");
 //     utils = require('./utils.js');
 
-// db.serialize(function() {
-//   //var exists = path.existsSync(database); //if you are using an old node version, you should replace fs.existsSync with path.existsSync
-//   var exists = fs.existsSync(database);
-//   if(!exists) {
-//       db.run("CREATE TABLE people (id TEXT, yun_addr TEXT, last_seen INTEGER, last_away INTEGER);")
-//   }
-// });
+db.serialize(function() {
+  //var exists = path.existsSync(database); //if you are using an old node version, you should replace fs.existsSync with path.existsSync
+  var exists = fs.existsSync(database);
+  if(!exists) {
+      db.run("CREATE TABLE IF NOT EXISTS people (id TEXT, yun_addr TEXT, yun_pin INTEGER, last_seen INTEGER, last_away INTEGER);")
+  }
+});
 
 app.use(express.static(__dirname + '/public'));
 
@@ -39,13 +40,22 @@ app.get('/yun', function(req, res){
 
 app.get('/presence/:person', function(req, res){
     var person_id = req.param('person');
-    res.json({id: peson_id, name: 'bla', present: null,last_seen: null, last_away: null});
+    res.json({id: peson_id, present: null,last_seen: null, last_away: null});
+});
+
+app.get('/add_person', function(req, res){
+    var person_id = req.param('name');
+    var yun_addr = req.param('yun');
+    var yun_pin = req.param('pin');
+    db.run("INSERT INTO people (id, yun_addr, yun_pin) VALUES (?,?,?)",
+           [person_id, yun_addr, yun_pin]);
+    res.json({id: person_id, present: null,last_seen: null, last_away: null});
 });
 
 app.get('/status', function(req, res){
     res.json({status: [
-        {id: 'bla', name: 'Bla', present: null,last_seen: null, last_away: null},
-        {id: 'foo', name: 'Foo', present: null, last_seen: null, last_away: null}
+        {id: 'bla', present: null,last_seen: null, last_away: null},
+        {id: 'foo', present: null, last_seen: null, last_away: null}
     ], 
     count: 0 ,
     time: 0}
@@ -87,5 +97,9 @@ var arduino = function(pin, callback){
     });   
 };
 
+// app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+//   extended: true
+// })); 
+app.use( bodyParser.json() ); 
 app.listen(config.port);
 console.log("Server started in http://localhost:"+config.port);

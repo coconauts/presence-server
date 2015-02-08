@@ -2,11 +2,23 @@
 var express = require("express"),
     app = express(),
     fs = require("fs"),
+    sqlite3 = require("sqlite3").verbose(),
     http = require('http');
     
     
 //config
-var config = require('./config.json');
+var config = require('./config.json'),
+    database = config.db,
+    db = new sqlite3.Database("/tmp/presence.sql");
+//     utils = require('./utils.js');
+
+// db.serialize(function() {
+//   //var exists = path.existsSync(database); //if you are using an old node version, you should replace fs.existsSync with path.existsSync
+//   var exists = fs.existsSync(database);
+//   if(!exists) {
+//       db.run("CREATE TABLE people (id TEXT, yun_addr TEXT, last_seen INTEGER, last_away INTEGER);")
+//   }
+// });
 
 app.use(express.static(__dirname + '/public'));
 
@@ -26,12 +38,18 @@ app.get('/yun', function(req, res){
 }); 
 
 app.get('/presence/:person', function(req, res){
-    var person = req.param('person');
-    res.json({person: person, present: null,last_seen: null, last_away: null});
+    var person_id = req.param('person');
+    res.json({id: peson_id, name: 'bla', present: null,last_seen: null, last_away: null});
 });
 
-app.get('/full_status', function(req, res){
-    res.json([{person: 'bla', present: null,last_seen: null, last_away: null}]);
+app.get('/status', function(req, res){
+    res.json({status: [
+        {id: 'bla', name: 'Bla', present: null,last_seen: null, last_away: null},
+        {id: 'foo', name: 'Foo', present: null, last_seen: null, last_away: null}
+    ], 
+    count: 0 ,
+    time: 0}
+    );
 });
 
 

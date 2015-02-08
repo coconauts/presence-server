@@ -5,9 +5,6 @@ var express = require("express"),
     http = require('http');
     
     
-    
-
-    
 //config
 var config = require('./config.json');
 
@@ -27,6 +24,15 @@ app.get('/yun', function(req, res){
       arduino(pin, function(json){ res.json(json)});
        
 }); 
+
+app.get('/presence/:person', function(req, res){
+    var person = req.param('person');
+    res.json({person: person, present: null,last_seen: null, last_away: null});
+});
+
+app.get('/full_status', function(req, res){
+    res.json([{person: 'bla', present: null,last_seen: null, last_away: null}]);
+});
 
 
 var arduino = function(pin, callback){

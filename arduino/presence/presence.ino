@@ -15,23 +15,32 @@
 #include <YunServer.h>
 #include <YunClient.h>
 
+
+
 #define echoPin 12 // Echo Pin
 #define trigPin 11 // Trigger Pin
 #define LEDPin 13 // Onboard LED
+#define warningPin 10 
 
 int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed
 long duration, distance; // Duration used to calculate distance
 YunServer server; 
 
+
+long lastSeen = 0;
+long lastAway = 0;
+
 void setup() {
  Serial.begin (9600);
  pinMode(trigPin, OUTPUT);
  pinMode(echoPin, INPUT);
  pinMode(LEDPin, OUTPUT); // Use LED indicator (if required)
+ pinMode(warningPin, OUTPUT);
     Bridge.begin();
     server.listenOnLocalhost();
   server.begin();
+  
 }
 
 void loop() {
@@ -102,16 +111,26 @@ void sensorloop(){
  if (distance <= 50){
  /* Send a negative number to computer and Turn LED ON 
  to indicate "out of range" */
- Serial.println("-1");
+ //Serial.println("-1");
  digitalWrite(LEDPin, HIGH); 
  Bridge.put(String(LEDPin), String(1));
+ lastSeen = millis();
  }
  else {
  /* Send the distance to the computer using Serial protocol, and
  turn LED OFF to indicate successful reading. */
- Serial.println(distance);
+ //Serial.println(distance);
  digitalWrite(LEDPin, LOW);
  Bridge.put(String(LEDPin), String(0)); 
+ lastAway = millis();
+ }
+ 
+ Serial.println(lastAway);
+ 
+ if (lastAway+ 5000 < millis()   ){
+     digitalWrite(warningPin, HIGH);
+ } else {
+     digitalWrite(warningPin, LOW);
  }
  
 }
